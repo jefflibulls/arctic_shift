@@ -9,7 +9,8 @@ from fileStreams import getFileJsonStream
 from utils import FileProgressLog
 
 
-fileOrFolderPath = r"<path to file or folder>"
+# fileOrFolderPath = r"<path to file or folder>"
+fileOrFolderPath = r"C:\data\subreddits_2024-01.zst"
 recursive = False
 
 def processFile(path: str):
@@ -20,26 +21,43 @@ def processFile(path: str):
 			print(f"Skipping unknown file {path}")
 			return
 		progressLog = FileProgressLog(path, f)
-		for row in jsonStream:
+
+		# Initialize results variable
+		results = []
+
+		# for row in jsonStream:
+		for i, row in enumerate(jsonStream):
+
+			if i >= 100:
+				break # Stop after 10 rows for testing
+
 			progressLog.onRow()
 			# PUT YOUR CODE HERE
 			
 			# example fields
-			author = row["author"]
-			subreddit = row["subreddit"]
-			id = row["id"]
-			created = row["created_utc"]
-			score = row["score"]
+			subreddit_nm = row["display_name"]
+			num_comments = row["_meta"]["num_comments"]
+			# author = row["author"]
+			# subreddit = row["subreddit"]
+			# id = row["id"]
+			# created = row["created_utc"]
+			# score = row["score"]
 			# posts only
-			# title = row["title"]
+			title = row["title"]
 			# body = row["selftext"]
 			# url = row["url"]
 			# comments only
 			# body = row["body"]
 			# parent = row["parent_id"]	# id/name of the parent comment or post (e.g. t3_abc123 or t1_abc123)
 			# link_id = row["link_id"]	# id/name of the post (e.g. t3_abc123)
+
+			results.append(num_comments)
+
 		progressLog.logProgress("\n")
-	
+
+	# return row.keys()
+	return results
+
 
 def processFolder(path: str):
 	fileIterator: Iterable[str]
@@ -59,9 +77,11 @@ def processFolder(path: str):
 
 def main():
 	if os.path.isdir(fileOrFolderPath):
-		processFolder(fileOrFolderPath)
+		results = processFolder(fileOrFolderPath)
+		print(results)
 	else:
-		processFile(fileOrFolderPath)
+		results = processFile(fileOrFolderPath)
+		print(results)
 	
 	print("Done :>")
 
